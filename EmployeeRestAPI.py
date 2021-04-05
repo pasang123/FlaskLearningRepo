@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from json import dumps
 import json
 import sqlite3
-
+import logging
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,12 +14,14 @@ api = Api(app)
 def home():
     return {'data': 'Welcome Home'}
 
+
 class Employees(Resource):
     def get(self):
         conn = sqlite3.connect('chinook.db') # connect to database
         cur = conn.cursor()
         query = cur.execute("select * from employees") # This line performs query and returns json result
         return {'employees': [i[0] for i in query.fetchall()]} # Fetches first column that is Employee ID
+
 
 class Tracks(Resource):
     def get(self):
@@ -29,6 +31,7 @@ class Tracks(Resource):
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         final_result = json.load(result)
         return final_result
+
 
 class Employees_Name(Resource):
     def get(self, employee_id):
@@ -46,5 +49,5 @@ api.add_resource(Employees_Name, '/employees/<employee_id>') # Route_3
 
 
 if __name__ == '__main__':
+     logging.info("Inside main")
      app.run(port='5002')
-     
